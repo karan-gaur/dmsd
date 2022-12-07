@@ -169,30 +169,81 @@ router.post("/document/reserve", (req, res) => {
 
 router.post("/document/reserve/checkout", (req, res) => {
     // Checking out document already reserved by user
+    db.query(
+        `SELECT ${DBQ.RESERVES_DOCUMENT_ID} FROM ${DBQ.RESERVES} WHERE ${DBQ.RESERVE_ID}=${req.body.reserveID} AND ${DBQ.READER_ID}=${req.body.uid} AND ${DBQ.RESERVES_STATUS} IS NULL`,
+        (error, result) => {
+            if (error) {
+                logger.error(`Error while checking out reserve Document - ${error.message}`);
+                res.status(500).json({ error: ERROR[500] });
+            } else if (result.length == 0) {
+                logger.info(`Reservation no longer available ${req.body}`);
+                res.status(204).json({ result: "Reservation no longer available" });
+            } else {
+                // Updating reserve status
+                db.query(
+                    `UPDATE ${DBQ.RESERVES} SET ${DBQ.RESERVES_STATUS}=TRUE WHERE ${DBQ.RESERVE_ID}=${req.body.reserveID} AND ${DBQ.READER_ID}=${req.body.uid}`,
+                    (error) => {
+                        if (error) {
+                            logger.error(`Error updating reserve document status ${req.body} - ${error.message}`);
+                            res.status(500).json({ error: ERROR[500] });
+                        } else {
+                            // Adding to Borrows table
+                            db.query(
+                                `INSERT INTO ${DBQ.BORROWS} (${DBQ.BORROWED_DOCUMENT_ID}, ${DBQ.READER_ID}) VALUES (${
+                                    result[0][DBQ.RESERVES_DOCUMENT_ID]
+                                }, ${req.body.uid})`,
+                                (error) => {
+                                    if (error) {
+                                        logger.error(
+                                            `Error adding reserved document to borrow ${req.body} - ${error.message}`
+                                        );
+                                        res.status(500).json({ error: ERROR[500] });
+                                    } else {
+                                        logger.info(
+                                            `Document borrowed - ${result[0][DBQ.RESERVES_DOCUMENT_ID]} by ${
+                                                req.body.uid
+                                            }`
+                                        );
+                                        res.status(200).json({ result: "Document borrow successfully" });
+                                    }
+                                }
+                            );
+                        }
+                    }
+                );
+            }
+        }
+    );
 });
 
 router.post("/status/bookings/reserves", (req, res) => {
-    db.query(`SELECT * FROM ${DBQ.RESERVES} WHERE ${DBQ.READER_ID}=${req.body.uid}`, (error, result) => {
-        if (error) {
-            logger.error(`Error count User's Reserves - ${error.message}`);
-            res.status(500).json({ error: ERROR[500] });
-        } else {
-            logger.info(`Evaluated user's reserves. UID - ${req.body.uid}`);
-            res.status(200).json({ result });
+    db.query(
+        `SELECT * FROM ${DBQ.RESERVES} WHERE ${DBQ.READER_ID}=${req.body.uid} ORDER BY ${DBQ.RESERVES_STATUS}`,
+        (error, result) => {
+            if (error) {
+                logger.error(`Error count User's Reserves - ${error.message}`);
+                res.status(500).json({ error: ERROR[500] });
+            } else {
+                logger.info(`Evaluated user's reserves. UID - ${req.body.uid}`);
+                res.status(200).json({ result });
+            }
         }
-    });
+    );
 });
 
 router.post("/status/bookings/borrows", (req, res) => {
-    db.query(`SELECT * FROM ${DBQ.BORROWS} WHERE ${DBQ.READER_ID}=${req.body.uid}`, (error, result) => {
-        if (error) {
-            logger.error(`Error count User's Borrows - ${error.message}`);
-            res.status(500).json({ error: ERROR[500] });
-        } else {
-            logger.info(`Evaluated user's reserves UID - ${req.body.uid}`);
-            res.status(200).json({ result });
+    db.query(
+        `SELECT * FROM ${DBQ.BORROWS} WHERE ${DBQ.READER_ID}=${req.body.uid} ORDER BY ${DBQ.BORROW_RTIME}`,
+        (error, result) => {
+            if (error) {
+                logger.error(`Error count User's Borrows - ${error.message}`);
+                res.status(500).json({ error: ERROR[500] });
+            } else {
+                logger.info(`Evaluated user's reserves UID - ${req.body.uid}`);
+                res.status(200).json({ result });
+            }
         }
-    });
+    );
 });
 
 router.post("/status/fines", (req, res) => {

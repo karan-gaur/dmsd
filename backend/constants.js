@@ -39,6 +39,7 @@ const DBQ = {
     READER_ID: "Reader_ID",
     READER_PASSWD: "Password",
     RESERVES: "RESERVES",
+    RESERVE_ID: "Reserve_ID",
     RESERVES_STATUS: "RStatus",
     RESERVES_DOCUMENT_ID: "Doc_Detail",
 };
