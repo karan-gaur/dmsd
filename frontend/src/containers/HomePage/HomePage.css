@@ -1,0 +1,11 @@
+.HomeContainer {
+    height: 100vh;
+    text-align: center;
+}
+
+.HomeContainer h2{
+    font-size: 42px;
+    position: relative;
+    top: 5%;
+    transform: translateY(-15%);
+}
