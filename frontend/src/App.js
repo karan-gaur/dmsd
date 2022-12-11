@@ -1,16 +1,22 @@
 import './App.css';
 import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
-import Auth from './containers/Auth/Auth';
-import Layout from './containers/Layout/Layout';
-import HomePage from './containers/HomePage/HomePage';
-
-import * as actions from './store/actions/index';
 import { useEffect } from 'react';
 import { connect } from 'react-redux';
 
+import Auth from './containers/Auth/Auth';
+import Layout from './containers/Layout/Layout';
+import HomePage from './containers/HomePage/HomePage';
+import BookDetails from './components/BookDetails/BookDetails';
+
+import * as actions from './store/actions/index';
+import Logout from './containers/Auth/Logout/Logout';
+import Reservation from './containers/Reservation/Reservation';
+import Orders from './containers/Orders/Orders';
+
+
 function App(props) {
 
-  useEffect(()=> {
+  useEffect(() => {
     props.onTryAutoSignup();
   })
   let routes = (
@@ -20,6 +26,19 @@ function App(props) {
       <Redirect to="/" />
     </Switch>
   );
+  if(props.isAuthenticated) {
+    routes = (
+      <Switch>
+        <Route path='/book/:docId' component={BookDetails}/>
+        {/* <Route path="/manager" component={Manager} /> */}
+        <Route path="/reservation" component={Reservation} />
+        <Route path="/booked" component={Orders} />
+        <Route path="/logout" component={Logout} />
+        <Route path="/" exact component={HomePage} />
+        <Redirect to="/" />
+      </Switch>
+    );
+  }
   return (
     <div className="App">
       <Layout>
@@ -40,4 +59,4 @@ const mapDispatchToProps = dispatch => {
     onTryAutoSignup: () => dispatch(actions.authCheckState())
   };
 };
-export default withRouter( connect( mapStateToProps, mapDispatchToProps )( App ) );
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));

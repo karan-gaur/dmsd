@@ -161,7 +161,7 @@ const Auth = (props) => {
             {errorMessage}
             <form onSubmit={submitHandler}>
                 {form}
-                <Button btnType="Success">SUBMIT</Button>
+                <Button type="submit" btnType="Success">SUBMIT</Button>
             </form>
             {/* <Button 
                 clicked={switchAuthModeHandler}

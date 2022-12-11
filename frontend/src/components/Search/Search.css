@@ -140,7 +140,7 @@ body textarea {
 .data-list li {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
     margin-bottom: 15px;
     padding: 30px;
 }

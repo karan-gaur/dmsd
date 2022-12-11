@@ -1,0 +1,13 @@
+.Wrapper {
+    display: flex;
+    justify-content: space-between;
+}
+
+.Reserved,.Returned {
+    flex-basis: 48%;
+}
+
+.card-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+}
