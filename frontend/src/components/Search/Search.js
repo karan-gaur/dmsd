@@ -1,19 +1,33 @@
-import './Serch.css';
+import './Search.css';
 import { useState } from 'react';
 import axios from 'axios';
+import Card from '../Card/Card';
 
 const Search = (props) => {
     const [books, setBooks] = useState(null);
     const [searchKeyword, setSearchKeyword] = useState('');
-    const [showFilter, setShowFilter] = useState(false);
-    const [currentFilter, setCurrentFilter] = useState('title');
+    const [currentFilter, setCurrentFilter] = useState('Title');
+    const filterList = [
+        {name:'Title', filterValue:'Title'},
+        {name:'Publisher', filterValue:'PUBLISHER'},
+        {name:'Document ID', filterValue:'Doc_ID'},
+    ]
+
+    const getSearchParam = () => {
+        if(currentFilter === 'Doc_ID') {
+            return (Number(searchKeyword))
+        }
+        return searchKeyword;
+    }
 
     const submitForm = (e) => {
         e.preventDefault();
+        const searchParam = getSearchParam();
         const data = {
             "searchBy": currentFilter,
-            "search": searchKeyword
+            "search": searchParam
         }
+        console.log(data);
         axios.post('http://localhost:3000/reader/search', data).then(resp=>{
             console.log(resp);
             if(resp.status === 200) {
@@ -25,7 +39,6 @@ const Search = (props) => {
     return (
         <div className="filter">
             <div className="search-outer">
-                <button className='FilterButton' onClick={() => setShowFilter(prevState => !prevState)}><img src="https://img.icons8.com/material-sharp/24/null/sorting-options.png" alt="Filters"/></button>
                 <form
                     role="search"
                     method="get"
@@ -44,36 +57,26 @@ const Search = (props) => {
                         <img src="https://img.icons8.com/ios-glyphs/30/null/search--v1.png" alt="SEARCH iCON" />
                     </button>
                 </form>
-                {showFilter && <div className='showFilter'>
+                <div className='showFilter'>
                     <div className='radioFilter'>
-                        <div>
-                            <input checked type='radio' value='title' id='title' name='filterResults' onChange={(event) => setCurrentFilter(event.target.value)} />
-                            <label htmlFor='title'>Title</label>
-                        </div>
-                        <div>
-                            <input type='radio' value='author' id='author' name='filterResults' onChange={(event) => this.setCurrentFilter(event.target.value)} />
-                            <label htmlFor='author'>Author</label>
-                        </div>
-                        <div>
-                            <input type='radio' value='vote' id='vote' name='filterResults' onChange={(event) => this.setCurrentFilter(event.target.value)} />
-                            <label htmlFor='vote'>Vote</label>
-                        </div>
+                        Filter By:
+                        {filterList.map((filter, index) => (
+                            <div key={index}>
+                                <input checked={filter.filterValue === currentFilter} type='radio' value={filter.filterValue} id={filter.name} name='filterResults' onChange={(event) => setCurrentFilter(event.target.value)} />
+                                <label htmlFor={filter.name}>{filter.name}</label>
+                            </div>
+                        ))}
                     </div>
-                </div>}
+                </div>
             </div>
-            <ul className="data-list">
-                {/* post items mapped in a list linked to onKeyUp function */}
-                {books && books?.length && books.map((item, index) => (
-                    <li key={item.id} className=''>
-                        <a className="title" href={item.link}>
-                            <h3>{item.Title}</h3>
-                        </a>
-                        <a className="link" href={item.link}>
-                            Read more
-                        </a>
-                    </li>
-                ))}
-            </ul>
+            {books && books?.length ? 
+                <div className="data-list">
+                    {books.map((item, index) => (
+                        <Card key={index} item={item} cardType="bookDetails"/>
+                    ))}
+                </div> : 
+                books?.length === 0 && <p>No Results Found</p> 
+            }
         </div>
     );
 };

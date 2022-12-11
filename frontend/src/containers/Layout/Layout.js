@@ -12,13 +12,13 @@ const Layout = (props) => {
     const [state, setState] = useState(initState);
 
     const sideDrawerClosedHandler = () => {
-        setState( initState );
+        setState(initState);
     }
 
     const sideDrawerToggleHandler = () => {
-        setState( ( prevState ) => {
+        setState((prevState) => {
             return { showSideDrawer: !prevState.showSideDrawer };
-        } );
+        });
     }
 
     return (
@@ -33,7 +33,14 @@ const Layout = (props) => {
                 open={state.showSideDrawer}
                 closed={sideDrawerClosedHandler} />
             <main className='Content'>
-                {props.children}
+                <div className="HomeContainer" style={{
+                    backgroundImage: `url(${process.env.PUBLIC_URL + '/book-background.png'})`,
+                    backgroundSize: 'cover',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: '50% 75%'
+                }}>
+                    {props.children}
+                </div>
             </main>
         </div>
     )
@@ -46,4 +53,4 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect( mapStateToProps )( Layout );
+export default connect(mapStateToProps)(Layout);
