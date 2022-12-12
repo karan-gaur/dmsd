@@ -8,7 +8,7 @@ const Search = (props) => {
     const [searchKeyword, setSearchKeyword] = useState('');
     const [currentFilter, setCurrentFilter] = useState('Title');
     const filterList = [
-        {name:'Title', filterValue:'Title'},
+        {name:'Title', filterValue:'title'},
         {name:'Publisher', filterValue:'PUBLISHER'},
         {name:'Document ID', filterValue:'Doc_ID'},
     ]

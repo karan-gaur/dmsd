@@ -12,19 +12,16 @@ function Reservation(props) {
     const [reservedDocumentDetails, setReservedDocumentDetails] = useState([]);
 
     useEffect(() => {
-        const data = {
-            "uid": userId
-        }
-        axios.post('http://localhost:3000/reader/status/bookings/reserves', data).then(resp => {
+        axios.get('http://localhost:3000/reader/status/bookings/reserves').then(resp => {
             if (resp.status === 200) {
                 setReservedDocumentDetails(resp.data.result);
             }
         })
-    }, [userId]);
+    });
 
     return (
         <>
-            <h2>User Reserved/Returned Documents</h2>
+            <h2>User Reserved Documents</h2>
 
             {reservedDocumentDetails && reservedDocumentDetails?.length ?
                 <div className='dataList'>
