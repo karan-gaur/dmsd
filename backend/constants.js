@@ -15,8 +15,9 @@ const TOKEN_KEY = process.env.TOKEN_KEY;
 const TOKEN_EXPIRY = process.env.TOKEN_EXPIRY;
 
 // Constraints
-const RESERVE_LIMIT = 10;
+// const PHONE_NUM = new RegExp("^(+d{1,2}s)?(?d{3})?[s.-]d{3}[s.-]d{4}$");
 const BOOK_LIMIT = 10;
+const RESERVE_LIMIT = 10;
 
 // User Types
 const USER = {
@@ -53,16 +54,22 @@ const DBQ = {
     DOCUMENT: "DOCUMENT",
     DOCUMENT_ID: "Doc_ID",
     DOCUMENT_TITLE: "Title",
+    DOCUMENT_PDATE: "Pdate",
     DOCUMENT_COPY: "DOC_COPY",
     DOCUMENT_COPY_ID: "UUID",
+    DOCUMENT_COPY_NUM: "Copy_No",
     DOCUMENT_COPY_AVAILABLE: "Available",
     PUBLISHER: "PUBLISHER",
     PUBLSIHER_ID: "Publisher_ID",
+    PUBLISHER_ADDRESS: "Address",
     PUBLISHER_NAME: "Publisher_Name",
     READER: "READER",
+    READER_NAME: "Name",
     READER_TYPE: "Type",
     READER_ID: "Reader_ID",
     READER_PASSWD: "Password",
+    READER_ADDRESS: "Address",
+    READER_PHONE_NUM: "Phone_NO",
     RESERVES: "RESERVES",
     RESERVE_ID: "Reserve_ID",
     RESERVES_STATUS: "RStatus",

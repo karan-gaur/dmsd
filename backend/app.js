@@ -7,7 +7,7 @@ const admin = require("./routes/admin");
 const reader = require("./routes/reader");
 const { logger, db } = require("./config");
 const { PORT, DBQ } = require("./constants");
-const { generateAccessToken, validateUserToken, validateEmail, validateAdminToken } = require("./utility");
+const { generateAccessToken, validateUserToken, validateLogin, validateAdminToken } = require("./utility");
 
 // Creating Express Application
 const app = express();
@@ -15,9 +15,11 @@ app.use(cors());
 app.use(express.json());
 
 // Adding routes
-app.post("/login", validateEmail, (req, res) => {
+app.use("/reader", validateUserToken, reader.router);
+app.use("/admin", validateAdminToken, admin.router);
+app.post("/login", validateLogin, (req, res) => {
     db.query(
-        `SELECT ${DBQ.READER_PASSWD} from ${DBQ.READER} where ${DBQ.READER_ID}=${req.body.uid}`,
+        `SELECT ${DBQ.READER_PASSWD}, ${DBQ.READER_TYPE} from ${DBQ.READER} where ${DBQ.READER_ID}=${req.body.uid}`,
         (error, result) => {
             if (error) {
                 logger.error(`Error in DB Query ${error.message}`);
@@ -35,8 +37,6 @@ app.post("/login", validateEmail, (req, res) => {
         }
     );
 });
-app.use("/reader", validateUserToken, reader.router);
-app.use("/admin", validateAdminToken, admin.router);
 
 // Catch and report 404 page requests
 app.use(function (req, res) {

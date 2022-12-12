@@ -98,8 +98,8 @@ CREATE TABLE READER(
     Type VARCHAR(20) NOT NULL,
     Name VARCHAR(20) NOT NULL,
     Address VARCHAR(200),
-    Phone_NO CHAR(10),
-    CONSTRAINT CHK_PHONE CHECK (Phone_NO not like '%[^0-9]%')
+    Phone_NO CHAR(14),
+    CONSTRAINT CHK_PHONE CHECK (Phone_NO not like '^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$')
 );
 
 CREATE TABLE BORROWS(
