@@ -1,5 +1,8 @@
+// Server Hosting
 const HOST = "0.0.0.0";
 const PORT = "3000";
+
+// Database Configurations
 const DB_DETAILS = {
     host: "localhost",
     user: process.env.DB_USER,
@@ -7,18 +10,39 @@ const DB_DETAILS = {
     database: process.env.DB_NAME,
 };
 
+// Auth Token Secret Key
+const TOKEN_KEY = process.env.TOKEN_KEY;
+const TOKEN_EXPIRY = process.env.TOKEN_EXPIRY;
+
 // Constraints
 const RESERVE_LIMIT = 10;
 const BOOK_LIMIT = 10;
+
+// User Types
+const USER = {
+    ADMIN: "admin",
+    STUDENT: "student",
+    STAFF: "staff",
+    SCITIZEN: "scitizen",
+};
 
 // Errors
 const ERROR = {
     500: "Internal server error. Please retry after some time",
 };
 
+const SEARCH_BY = {
+    doc_id: "doc_id",
+    title: "title",
+    publisher: "publisher",
+};
+
 // DB Query Constants
 const DBQ = {
     BRANCH: "BRANCH",
+    BRANCH_ID: "BID",
+    BRANCH_NAME: "Name",
+    BRANCH_LOCATION: "Location",
     BORROWS: "BORROWS",
     BORROW_FINES: "Fine",
     BORROW_TIME: "BDTime",
@@ -36,20 +60,26 @@ const DBQ = {
     PUBLSIHER_ID: "Publisher_ID",
     PUBLISHER_NAME: "Publisher_Name",
     READER: "READER",
+    READER_TYPE: "Type",
     READER_ID: "Reader_ID",
     READER_PASSWD: "Password",
     RESERVES: "RESERVES",
     RESERVE_ID: "Reserve_ID",
     RESERVES_STATUS: "RStatus",
     RESERVES_DOCUMENT_ID: "Doc_Detail",
+    RESERVES_TIME: "RDTime",
 };
 
 module.exports = {
     DBQ,
+    USER,
     HOST,
     PORT,
     ERROR,
+    SEARCH_BY,
     DB_DETAILS,
-    RESERVE_LIMIT,
     BOOK_LIMIT,
+    RESERVE_LIMIT,
+    TOKEN_KEY,
+    TOKEN_EXPIRY,
 };
