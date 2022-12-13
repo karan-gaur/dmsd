@@ -1,10 +1,18 @@
-const { Router } = require("express");
 const express = require("express");
 const router = express.Router();
 
 const { db, logger } = require("../config");
-const { DBQ, ERROR } = require("../constants");
-const { validateNewPublisher, validateNewDocument, validateNewCopy, validateNewReader } = require("../utility");
+const { DBQ, ERROR, SEARCH_BY } = require("../constants");
+const {
+    validateNewPublisher,
+    validateNewDocument,
+    validateNewCopy,
+    validateNewReader,
+    validateBorrowLimit,
+    validateMostBooksBorrow,
+    validateBranchFine,
+    validateSearchParams,
+} = require("../utility");
 
 // Listing all Library Branches
 router.get("/branches", (req, res) => {
@@ -89,7 +97,84 @@ router.post("/add/reader", validateNewReader, (req, res) => {
     );
 });
 
-// Search Document
+// Most Borrowers
+router.post("/stats/most/borrowers", validateBorrowLimit, (req, res) => {
+    let query;
+    if (req.body.bid) {
+        query = `SELECT ${DBQ.READER_NAME}, ${DBQ.READER_PHONE_NUM}, COUNT(*) AS ${DBQ.BORROWS} FROM (SELECT * FROM (SELECT * FROM ${DBQ.DOCUMENT_COPY} WHERE ${DBQ.BRANCH_ID}=${req.body.bid}) T1 JOIN ${DBQ.BORROWS} ON ${DBQ.BORROWED_DOCUMENT_ID}=${DBQ.DOCUMENT_COPY_ID})T2 NATURAL JOIN ${DBQ.READER} GROUP BY ${DBQ.READER_ID} ORDER BY COUNT(*) DESC LIMIT ${req.body.limit};`;
+    } else {
+        query = `SELECT ${DBQ.READER_NAME}, ${DBQ.READER_PHONE_NUM}, COUNT(*) AS ${DBQ.BORROWS} FROM ${DBQ.BORROWS} NATURAL JOIN ${DBQ.READER} GROUP BY ${DBQ.READER_ID} ORDER BY COUNT(*) DESC LIMIT ${req.body.limit}`;
+    }
+    db.query(query, (error, result) => {
+        if (error) {
+            logger.error(`Error Evaluating Most Borrowers - ${error.message}`);
+            return res.status(500).json({ error: ERROR[500] });
+        }
+        logger.info(`Evaluated most borrowers`);
+        return res.status(200).json({ result });
+    });
+});
+
+// Stats Most Borrowed Book
+router.post("/stats/most/borrowed/books", validateMostBooksBorrow, (req, res) => {
+    let query;
+    if (req.body.year) {
+        query = `SELECT ${DBQ.DOCUMENT_TITLE}, COUNT(*) AS NO_OF_BORROWS FROM (SELECT * FROM ${DBQ.BORROWS} JOIN ${DBQ.DOCUMENT_COPY} ON ${DBQ.DOCUMENT_COPY_ID}=${DBQ.BORROWED_DOCUMENT_ID} WHERE YEAR(${DBQ.BORROW_TIME})=${req.body.year}) T1 NATURAL JOIN ${DBQ.DOCUMENT} GROUP BY ${DBQ.DOCUMENT_ID} ORDER BY COUNT(*) DESC LIMIT ${req.body.limit};`;
+    } else if (req.body.bid) {
+        query = `SELECT ${DBQ.DOCUMENT_TITLE}, COUNT(*) AS NO_OF_BORROWS FROM (SELECT * FROM ${DBQ.BORROWS} JOIN ${DBQ.DOCUMENT_COPY} ON ${DBQ.DOCUMENT_COPY_ID}=${DBQ.BORROWED_DOCUMENT_ID} WHERE ${DBQ.BRANCH_ID}=${req.body.bid}) T1 NATURAL JOIN ${DBQ.DOCUMENT} GROUP BY ${DBQ.DOCUMENT_ID} ORDER BY COUNT(*) DESC LIMIT ${req.body.limit};`;
+    } else {
+        query = `SELECT ${DBQ.DOCUMENT_TITLE}, COUNT(*) AS NO_OF_BORROWS FROM (SELECT * FROM ${DBQ.BORROWS} JOIN ${DBQ.DOCUMENT_COPY} ON ${DBQ.DOCUMENT_COPY_ID}=${DBQ.BORROWED_DOCUMENT_ID}) T1 NATURAL JOIN ${DBQ.DOCUMENT} GROUP BY ${DBQ.DOCUMENT_ID} ORDER BY COUNT(*) DESC LIMIT ${req.body.limit};`;
+    }
+
+    db.query(query, (error, result) => {
+        if (error) {
+            logger.error(`Error Evaluating Most Borrowers - ${error.message}`);
+            return res.status(500).json({ error: ERROR[500] });
+        }
+        logger.info(`Evaluated most borrowers`);
+        return res.status(200).json({ result });
+    });
+});
+
+// Fines paid at Branch
+router.post("/fine", validateBranchFine, (req, res) => {
+    let query;
+    if (req.body.bid) {
+        query = `SELECT ${DBQ.BRANCH_NAME}, ${DBQ.BRANCH_LOCATION}, SUM(${DBQ.BORROW_FINES}) AS FINES FROM (SELECT * FROM ${DBQ.BORROWS} JOIN ${DBQ.DOCUMENT_COPY} ON ${DBQ.BORROWED_DOCUMENT_ID}=${DBQ.DOCUMENT_COPY_ID} WHERE ${DBQ.BRANCH_ID}=${req.body.bid}) T1 NATURAL JOIN ${DBQ.BRANCH} GROUP BY ${DBQ.BRANCH_ID} ORDER BY SUM(${DBQ.BORROW_FINES}) DESC`;
+    } else {
+        query = `SELECT ${DBQ.BRANCH_NAME}, ${DBQ.BRANCH_LOCATION}, CASE WHEN ${DBQ.BORROW_FINES} IS NULL THEN 0 ELSE SUM(${DBQ.BORROW_FINES}) END AS FINES FROM (SELECT * FROM ${DBQ.BORROWS} JOIN ${DBQ.DOCUMENT_COPY} ON ${DBQ.BORROWED_DOCUMENT_ID}=${DBQ.DOCUMENT_COPY_ID}) T1 RIGHT OUTER JOIN ${DBQ.BRANCH} ON T1.${DBQ.BRANCH_ID}=${DBQ.BRANCH}.${DBQ.BRANCH_ID} GROUP BY ${DBQ.BRANCH}.${DBQ.BRANCH_ID} ORDER BY SUM(${DBQ.BORROW_FINES}) DESC`;
+    }
+
+    db.query(query, (error, result) => {
+        if (error) {
+            logger.error(`Error Evaluating Most Fines - ${error.message}`);
+            return res.status(500).json({ error: ERROR[500] });
+        }
+        logger.info(`Evaluated Most Fines`);
+        return res.status(200).json({ result });
+    });
+});
+
+// Search for documents
+router.post("/search", validateSearchParams, (req, res) => {
+    let query = "";
+    if (req.body.searchBy == SEARCH_BY.publisher) {
+        query = `SELECT * FROM (SELECT * FROM ${DBQ.DOCUMENT} NATURAL JOIN ${DBQ.PUBLISHER}) T1 NATURAL JOIN ${DBQ.DOCUMENT_COPY} WHERE ${DBQ.PUBLISHER_NAME} LIKE "%${req.body.search}%" AND ${DBQ.DOCUMENT_COPY_AVAILABLE} IS ${req.body.available}`;
+    } else if (req.body.searchBy == SEARCH_BY.doc_id) {
+        query = `SELECT * FROM ${DBQ.DOCUMENT} WHERE ${DBQ.DOCUMENT_ID}=${req.body.search} AND ${DBQ.DOCUMENT_COPY_AVAILABLE} IS ${req.body.available}`;
+    } else if (req.body.searchBy == SEARCH_BY.title) {
+        query = `SELECT * FROM ${DBQ.DOCUMENT} WHERE ${DBQ.DOCUMENT_TITLE} LIKE "%${req.body.search}%" AND ${DBQ.DOCUMENT_COPY_AVAILABLE} IS ${req.body.available}`;
+    }
+    db.query(query, (error, result) => {
+        if (error) {
+            logger.error(`Error in DB Querry ${error.message}`);
+            res.status(500).json({ error: ERROR[500] });
+        } else {
+            logger.info(`Executing query ${query}`);
+            res.status(200).json({ result: result });
+        }
+    });
+});
 
 module.exports = {
     router,

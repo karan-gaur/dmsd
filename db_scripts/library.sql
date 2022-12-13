@@ -260,10 +260,11 @@ INSERT INTO READER(Password, Type, Name, Address, Phone_NO) VALUES
     ("password", "admin", "Karan", "NJIT", 7897897897),
     ("password1", "student", "Satyam", "NJIT", 7878787878);
 
+delimiter |
+
 -- Add Trigger to Unreserve Document everyday @ 6 PM
 DROP EVENT IF EXISTS RESET_RESERVES;
 
-delimiter |
 CREATE EVENT IF NOT EXISTS RESET_RESERVES
 ON SCHEDULE EVERY 1 DAY
 STARTS (TIMESTAMP(CURRENT_DATE)+ INTERVAL 1 DAY + INTERVAL 18 HOUR) 
@@ -282,8 +283,6 @@ FOR EACH ROW
 BEGIN
     UPDATE DOC_COPY SET Available=FALSE WHERE UUID=NEW.Doc_Detail;
 END |
-
--- Trigger to update Document_Copy
 
 -- Trigger to update Document_Copy status after borrow
 DROP TRIGGER IF EXISTS BOOK_BORROWED;
@@ -305,6 +304,18 @@ BEGIN
     IF (NEW.RDTime IS NOT NULL) THEN
         UPDATE DOC_COPY SET Available=TRUE WHERE UUID=NEW.Doc_Detail;
     END IF ;
+END |
+
+-- Add Trigger to calculate fine
+DROP TRIGGER IF EXISTS CALCULATE_FINE;
+
+CREATE TRIGGER CALCULATE_FINE
+BEFORE UPDATE ON BORROWS
+FOR EACH ROW
+BEGIN
+    IF (NEW.RDTime IS NOT NULL) THEN
+        SET NEW.FINE = (DATEDIFF(NEW.RDTime, NEW.BDTime)-0)*10;
+    END IF;
 END |
 
 delimiter ;
