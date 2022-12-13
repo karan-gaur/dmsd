@@ -47,7 +47,7 @@ export const auth = (email, password, isSignup) => {
             uid: 1,
             password: password
         };
-        let url = 'http://localhost:3000/reader/login';
+        let url = 'http://localhost:3000/login';
         // if (!isSignup) {
         //     url = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyC6TVSzbdy0Q_EA2FSWZdJ9mesn3N9EZyk';
         // }
@@ -68,6 +68,16 @@ export const auth = (email, password, isSignup) => {
                 console.log(err.response);
                 dispatch(authFail(err.response.data.error));
             });
+
+            const expiresIn = 3600;
+            const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
+            // localStorage.setItem('token', response.data.idToken);
+            localStorage.setItem('token', 'authToken');
+            localStorage.setItem('expirationDate', expirationDate);
+            localStorage.setItem('userId', 1);
+            // dispatch(authSuccess(response.data.idToken, response.data.localId));
+            dispatch(authSuccess('authToken', 1));
+            dispatch(checkAuthTimeout(expiresIn));
     };
 };
 
