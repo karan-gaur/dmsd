@@ -9,6 +9,7 @@ const BookDetails = (props) => {
     const { match } = props;
     const [documentDetails, setDocumentDetails] = useState([]);
     const [message, setMessage] = useState(null);
+    
     useEffect(() => {
         if (match.params.docId) {
             const data = {
@@ -26,7 +27,7 @@ const BookDetails = (props) => {
                 }
             })
         }
-    }, [match.params.docId])
+    }, [match.params.docId, message, props.token])
 
     const reserveBook = (doc_uuid) => {
         const data = {
@@ -51,13 +52,19 @@ const BookDetails = (props) => {
         })
     }
 
-    const borrowBook = (doc_uuid) => {
+    const checkoutBook = (doc_uuid) => {
         console.log('working', doc_uuid);
         const data = {
             doc_uuid: doc_uuid,
             uid: props.userId
         }
-        axios.post('http://localhost:3000/reader/document/checkout', data).then(resp => {
+        const headers = {
+            'Content-Type': 'application/json',
+            'authorization': `bearer ${localStorage.getItem('token')}`
+        }
+        axios.post('http://localhost:3000/reader/document/checkout', data, {
+            headers: headers
+        }).then(resp => {
             if (resp.status === 200) {
                 console.log(resp);
                 setMessage(resp.data.result)
@@ -77,7 +84,7 @@ const BookDetails = (props) => {
             {documentDetails && documentDetails?.length ?
                 <div className="dataList">
                     {documentDetails.map((item, index) => (
-                        <Card key={index} item={item} cardType="documentDetails" reserveBook={reserveBook} borrowBook={borrowBook} />
+                        <Card key={index} item={item} cardType="documentDetails" reserveBook={reserveBook} checkoutBook={checkoutBook} />
                     ))}
                 </div> :
                 documentDetails?.length === 0 && <><p>All Documents are reserved or already booked</p> <p>Please comeback Later. Go to <Link to="/">Home</Link> Page</p> </>

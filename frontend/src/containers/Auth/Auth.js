@@ -11,16 +11,15 @@ import * as actions from '../../store/actions/index';
 const Auth = (props) => {
     const defaultState = {
         controls: {
-            email: {
+            username: {
                 elementType: 'input',
                 elementConfig: {
-                    type: 'email',
-                    placeholder: 'Mail Address'
+                    type: 'text',
+                    placeholder: 'User Id'
                 },
                 value: '',
                 validation: {
-                    required: true,
-                    isEmail: true
+                    required: true
                 },
                 valid: false,
                 touched: false
@@ -104,12 +103,12 @@ const Auth = (props) => {
     const submitHandler = ( event ) => {
         event.preventDefault();
         let isManager = false;
-        if(state.controls.email.value === 'admin@gmail.com' && state.controls.password.value === 'password') {
+        if(state.controls.username.value === '1' && state.controls.password.value === 'password') {
             props.onSetAuthRedirectPath('/');
             props.onSetManger();
             isManager = true;
         }
-        props.onAuth( state.controls.email.value, state.controls.password.value, isManager );
+        props.onAuth( state.controls.username.value, state.controls.password.value, isManager );
     }
 
     // const switchAuthModeHandler = () => {
@@ -183,7 +182,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        onAuth: ( email, password, isSignup ) => dispatch( actions.auth( email, password, isSignup ) ),
+        onAuth: ( username, password, isSignup ) => dispatch( actions.auth( username, password, isSignup ) ),
         onSetAuthRedirectPath: (path) => dispatch(actions.setAuthRedirectPath(path)),
         onSetManger: () => dispatch(actions.setManager())
     };

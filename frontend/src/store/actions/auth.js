@@ -41,18 +41,16 @@ export const checkAuthTimeout = (expirationTime) => {
     };
 };
 
-export const auth = (email, password, isManager) => {
+export const auth = (username, password, isManager) => {
     return dispatch => {
         dispatch(authStart());
         const authData = {
             // todo: PASS UID IN PLACE OF 1 FOR DIIFFERENT USER, uid should be enterd by form if you want
-            uid: 1,
+            uid: username,
             password: password
         };
         let url = 'http://localhost:3000/login';
-        // if (!isSignup) {
-        //     url = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyC6TVSzbdy0Q_EA2FSWZdJ9mesn3N9EZyk';
-        // }
+
         axios.post(url, authData)
             .then(response => {
                 const expiresIn = 3600;
