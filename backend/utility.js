@@ -39,7 +39,6 @@ const validateAdminToken = (req, res, next) => {
     } else {
         try {
             req.body.token = jwt.verify(req.headers["authorization"].split(" ")[1], TOKEN_KEY);
-            console.log(req.body.token);
             if (req.body.token.permission !== USER.STAFF && req.body.token.permission !== USER.ADMIN) {
                 logger.warn(`Unauthorised user token access - ${req.body}`);
                 return res.status(403).json({ error: `Unauthorised access.` });
@@ -65,11 +64,18 @@ const validateLogin = (req, res, next) => {
 
 // Validating params for Search in Documents
 const validateSearchParams = (req, res, next) => {
-    console.log(req.body.searchBy in SEARCH_BY);
     if (typeof req.body.search !== "string" || !(req.body.searchBy in SEARCH_BY)) {
         logger.error(`Invalid value for search params - ${req.body}`);
         return res.status(400).json({
             error: `Missing/Invalid. { 'search' : 'must be string', 'searchBy': '${SEARCH_BY.doc_id} || ${SEARCH_BY.title} || ${SEARCH_BY.publisher}'`,
+        });
+    }
+    if (typeof req.body.available == "undefined") {
+        req.body.available = "NOT NULL";
+    } else if (typeof req.body.available !== "boolean") {
+        logger.error(`Invalid value for search params - ${req.body}`);
+        return res.status(400).json({
+            error: `Missing/Invalid. { 'search' : 'string', 'searchBy': '${SEARCH_BY.doc_id} || ${SEARCH_BY.title} || ${SEARCH_BY.publisher}', 'available': 'boolean' }`,
         });
     }
     next();
@@ -263,6 +269,43 @@ const validateNewReader = (req, res, next) => {
     next();
 };
 
+const validateBorrowLimit = (req, res, next) => {
+    if (
+        typeof req.body.limit !== "number" ||
+        (typeof req.body.bid !== "undefined" && typeof req.body.bid !== "number")
+    ) {
+        logger.error(`Invalid value for '/most/borrow' in body - ${req.body}`);
+        return res
+            .status(400)
+            .json({ error: "Missing/Invalid value. {'limit': 'number > 0', 'bid': 'number [OPTIONAL]'}" });
+    }
+    next();
+};
+
+const validateMostBooksBorrow = (req, res, next) => {
+    if (
+        typeof req.body.limit !== "number" ||
+        (typeof req.body.year !== "undefined" && typeof req.body.year !== "number") ||
+        (typeof req.body.bid !== "undefined" && typeof req.body.bid !== "number")
+    ) {
+        logger.error(`Invalid value for '/most/borrow/books' in body - ${req.body}`);
+        return res.status(400).json({
+            error: "Missing/Invalid value. {'limit': 'number > 0', 'year': 'number [OPTIONAL]', 'bid': 'number [OPTIONAL]'}",
+        });
+    }
+    next();
+};
+
+const validateBranchFine = (req, res, next) => {
+    if (typeof req.body.bid !== "undefined" && typeof req.body.bid !== "number") {
+        logger.error(`Invalid value for '/admin/fine' in body - ${req.body}`);
+        return res.status(400).json({
+            error: "Missing/Invalid value. {'bid': 'number [OPTIONAL]'}",
+        });
+    }
+    next();
+};
+
 module.exports = {
     validateDocID,
     validateLogin,
@@ -275,6 +318,9 @@ module.exports = {
     validateSearchParams,
     validateNewCopy,
     validateNewReader,
+    validateBranchFine,
     validateNewDocument,
+    validateBorrowLimit,
     validateNewPublisher,
+    validateMostBooksBorrow,
 };

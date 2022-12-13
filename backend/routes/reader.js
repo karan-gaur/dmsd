@@ -1,6 +1,4 @@
-const { query, Router } = require("express");
 const express = require("express");
-const { Console } = require("winston/lib/winston/transports");
 
 const { logger, db } = require("../config");
 const {
@@ -59,7 +57,6 @@ router.post("/document/checkout", validateCopyID, (req, res) => {
                 logger.error(`Error count User's Borrows - ${error.message}`);
                 res.status(500).json({ error: ERROR[500] });
             } else if (result.length >= BOOK_LIMIT) {
-                console.log("checl");
                 logger.info(`User has capped his booking limit. Cannot reserve more books`);
                 res.status(403).json({ error: `User has reached borrow limit of ${BOOK_LIMIT}` });
             } else {
@@ -221,7 +218,7 @@ router.get("/status/bookings/reserves", (req, res) => {
 
 router.get("/status/bookings/borrows", (req, res) => {
     db.query(
-        `SELECT ${DBQ.BORROW_ID}, ${DBQ.BRANCH_NAME}, ${DBQ.BRANCH_LOCATION}, ${DBQ.DOCUMENT_TITLE}, ${DBQ.BORROW_TIME}, ${DBQ.BORROW_RTIME} FROM ${DBQ.BORROWS} JOIN (SELECT * FROM ${DBQ.DOCUMENT} NATURAL JOIN (SELECT * FROM ${DBQ.DOCUMENT_COPY} NATURAL JOIN ${DBQ.BRANCH} ) T1) T2 WHERE ${DBQ.BORROWED_DOCUMENT_ID} = ${DBQ.DOCUMENT_COPY_ID} AND ${DBQ.READER_ID}=${req.body.token.uid}`,
+        `SELECT ${DBQ.BORROW_ID}, ${DBQ.BRANCH_NAME}, ${DBQ.BRANCH_LOCATION}, ${DBQ.DOCUMENT_TITLE}, ${DBQ.BORROW_TIME}, ${DBQ.BORROW_RTIME}, ${DBQ.BORROW_FINES} FROM ${DBQ.BORROWS} JOIN (SELECT * FROM ${DBQ.DOCUMENT} NATURAL JOIN (SELECT * FROM ${DBQ.DOCUMENT_COPY} NATURAL JOIN ${DBQ.BRANCH} ) T1) T2 WHERE ${DBQ.BORROWED_DOCUMENT_ID} = ${DBQ.DOCUMENT_COPY_ID} AND ${DBQ.READER_ID}=${req.body.token.uid}`,
         (error, result) => {
             if (error) {
                 logger.error(`Error count User's Borrows - ${error.message}`);
@@ -234,19 +231,19 @@ router.get("/status/bookings/borrows", (req, res) => {
     );
 });
 
-router.post("/status/fines", (req, res) => {
+router.get("/status/fines", (req, res) => {
     db.query(
-        `SELECT SUM(${DBQ.BORROW_FINES}) FROM ${DBQ.BORROWS} WHERE ${DBQ.READER_ID}=${req.body.token.uid}`,
+        `SELECT SUM(${DBQ.BORROW_FINES}) AS ${DBQ.BORROW_FINES} FROM ${DBQ.BORROWS} WHERE ${DBQ.READER_ID}=${req.body.token.uid}`,
         (error, result) => {
             if (error) {
                 logger.error(`Error evaluating user's fine - ${error.message}`);
                 res.status(500).json({ error: ERROR[500] });
-            } else if (result.length == 1) {
-                logger.info(`Evaluated user's fine - ${req.body.token.uid}`);
-                res.status(200).json({ result: result.Fine });
+            } else if (result.length == 0) {
+                logger.info(`No Borrows hence no fines - ${req.body.token.uid}`);
+                res.status(200).json({ result: 0 });
             } else {
                 logger.info(`User Dosen't Exists - ${req.body.token.uid}`);
-                res.status(200).json({ result });
+                res.status(200).json({ result: result[0][DBQ.BORROW_FINES] });
             }
         }
     );
