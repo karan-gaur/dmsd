@@ -12,12 +12,18 @@ function Reservation(props) {
     const [reservedDocumentDetails, setReservedDocumentDetails] = useState([]);
 
     useEffect(() => {
-        axios.get('http://localhost:3000/reader/status/bookings/reserves').then(resp => {
+        const headers = {
+            'Content-Type': 'application/json',
+            'authorization': `bearer ${localStorage.getItem('token')}`
+        }
+        axios.get('http://localhost:3000/reader/status/bookings/reserves', {
+            headers: headers
+        }).then(resp => {
             if (resp.status === 200) {
                 setReservedDocumentDetails(resp.data.result);
             }
         })
-    });
+    }, [userId]);
 
     return (
         <>

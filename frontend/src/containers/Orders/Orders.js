@@ -24,7 +24,13 @@ function Orders(props) {
         const data = {
             "uid": userId
         }
-        axios.post('http://localhost:3000/reader/status/bookings/borrows', data).then(resp => {
+        const headers = {
+            'Content-Type': 'application/json',
+            'authorization': `bearer ${localStorage.getItem('token')}`
+        }
+        axios.post('http://localhost:3000/reader/status/bookings/borrows', data, {
+            headers: headers
+          }).then(resp => {
             if (resp.status === 200) {
                 setAllDocumentDetails(resp.data.result);
             }

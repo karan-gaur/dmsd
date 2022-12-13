@@ -26,11 +26,28 @@ function App(props) {
       <Redirect to="/" />
     </Switch>
   );
-  if(props.isAuthenticated) {
+    
+    
+  // if ( props.manager && props.isAuthenticated) {
+  //   routes = (
+  //     <Switch>
+  //       <Route path="/add/document" component={AddDocument} />
+  //       <Route path="/add/reader" component={AddReader} />
+  //       <Route path="/add/document" component={AddDocument} />
+  //       <Route path="/add/publisher" component={AddPublisher} />
+  //       <Route path="/list/branches" component={ListBranches} />
+  //       <Route path="/list/publisher" component={ListPublisher} />
+  //       <Route path="/logout" component={Logout} />
+  //       <Route path="/" exact component={BurgerBuilder} />
+  //       <Redirect to="/" />
+  //     </Switch>
+  //   );
+  // }
+
+  if ( props.isAuthenticated && props.manager === false) {
     routes = (
       <Switch>
         <Route path='/book/:docId' component={BookDetails}/>
-        {/* <Route path="/manager" component={Manager} /> */}
         <Route path="/reservation" component={Reservation} />
         <Route path="/booked" component={Orders} />
         <Route path="/logout" component={Logout} />

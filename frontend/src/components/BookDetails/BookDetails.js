@@ -12,9 +12,15 @@ const BookDetails = (props) => {
     useEffect(() => {
         if (match.params.docId) {
             const data = {
-                "doc_id": match.params.docId
+                "doc_id": Number(match.params.docId)
             }
-            axios.post('http://localhost:3000/reader/document/check', data).then(resp => {
+            const headers = {
+                'Content-Type': 'application/json',
+                'authorization': `bearer ${localStorage.getItem('token')}`
+            }
+            axios.post('http://localhost:3000/reader/document/check', data, {
+                headers: headers
+            }).then(resp => {
                 if (resp.status === 200) {
                     setDocumentDetails(resp.data.result);
                 }
@@ -26,9 +32,14 @@ const BookDetails = (props) => {
         const data = {
             doc_uuid: doc_uuid,
             uid: props.userId
-
         }
-        axios.post('http://localhost:3000/reader/document/reserve', data).then(resp => {
+        const headers = {
+            'Content-Type': 'application/json',
+            'authorization': `bearer ${localStorage.getItem('token')}`
+        }
+        axios.post('http://localhost:3000/reader/document/reserve', data, {
+            headers: headers
+        }).then(resp => {
             if (resp.status === 200) {
                 console.log('resp',resp);
                 setMessage(resp.data.result);

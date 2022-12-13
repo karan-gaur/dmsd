@@ -6,11 +6,11 @@ import Card from '../Card/Card';
 const Search = (props) => {
     const [books, setBooks] = useState(null);
     const [searchKeyword, setSearchKeyword] = useState('');
-    const [currentFilter, setCurrentFilter] = useState('Title');
+    const [currentFilter, setCurrentFilter] = useState('title');
     const filterList = [
         {name:'Title', filterValue:'title'},
         {name:'Publisher', filterValue:'PUBLISHER'},
-        {name:'Document ID', filterValue:'Doc_ID'},
+        {name:'Document ID', filterValue:'doc_id'},
     ]
 
     const getSearchParam = () => {
@@ -27,8 +27,14 @@ const Search = (props) => {
             "searchBy": currentFilter,
             "search": searchParam
         }
+        const headers = {
+            'Content-Type': 'application/json',
+            'authorization': `bearer ${localStorage.getItem('token')}`
+          }
         console.log(data);
-        axios.post('http://localhost:3000/reader/search', data).then(resp=>{
+        axios.post('http://localhost:3000/reader/search', data, {
+            headers: headers
+          }).then(resp=>{
             console.log(resp);
             if(resp.status === 200) {
                 setBooks(resp.data.result);
