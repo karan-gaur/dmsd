@@ -14,7 +14,7 @@ function Reservation(props) {
     useEffect(() => {
         const headers = {
             'Content-Type': 'application/json',
-            'authorization': `bearer ${localStorage.getItem('token')}`
+            'authorization': `bearer ${props.token}`
         }
         axios.get('http://localhost:3000/reader/status/bookings/reserves', {
             headers: headers

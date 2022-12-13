@@ -27,6 +27,7 @@ export const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('expirationDate');
     localStorage.removeItem('userId');
+    localStorage.removeItem('isManager');
     return {
         type: actionTypes.AUTH_LOGOUT
     };
@@ -40,10 +41,11 @@ export const checkAuthTimeout = (expirationTime) => {
     };
 };
 
-export const auth = (email, password, isSignup) => {
+export const auth = (email, password, isManager) => {
     return dispatch => {
         dispatch(authStart());
         const authData = {
+            // todo: PASS UID IN PLACE OF 1 FOR DIIFFERENT USER, uid should be enterd by form if you want
             uid: 1,
             password: password
         };
@@ -56,28 +58,20 @@ export const auth = (email, password, isSignup) => {
                 const expiresIn = 3600;
                 console.log(response);
                 const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
-                // localStorage.setItem('token', response.data.idToken);
                 localStorage.setItem('token', response.data.token);
                 localStorage.setItem('expirationDate', expirationDate);
                 localStorage.setItem('userId', 1);
-                // dispatch(authSuccess(response.data.idToken, response.data.localId));
-                dispatch(authSuccess(response.data.idToken, 1));
+                if(isManager) {
+                    localStorage.setItem('isManager', isManager);
+                }
+                // todo: PASS UID IN PLACE OF 1 FOR DIIFFERENT USER, uid shoudl come in login resppne with authtoken
+                dispatch(authSuccess(response.data.token, 1));
                 dispatch(checkAuthTimeout(expiresIn));
             })
             .catch(err => {
                 console.log(err.response);
                 dispatch(authFail(err.response.data.error));
             });
-
-            const expiresIn = 3600;
-            const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
-            // localStorage.setItem('token', response.data.idToken);
-            localStorage.setItem('token', 'authToken');
-            localStorage.setItem('expirationDate', expirationDate);
-            localStorage.setItem('userId', 1);
-            // dispatch(authSuccess(response.data.idToken, response.data.localId));
-            dispatch(authSuccess('authToken', 1));
-            dispatch(checkAuthTimeout(expiresIn));
     };
 };
 
@@ -105,7 +99,11 @@ export const authCheckState = () => {
                 dispatch(logout());
             } else {
                 const userId = localStorage.getItem('userId');
+                const isManager =  localStorage.getItem('isManager');
                 dispatch(authSuccess(token, userId));
+                if(isManager) {
+                    dispatch(setManager());
+                }
                 dispatch(checkAuthTimeout((expirationDate.getTime() - new Date().getTime()) / 1000 ));
             }   
         }

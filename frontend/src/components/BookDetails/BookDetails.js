@@ -16,7 +16,7 @@ const BookDetails = (props) => {
             }
             const headers = {
                 'Content-Type': 'application/json',
-                'authorization': `bearer ${localStorage.getItem('token')}`
+                'authorization': `bearer ${props.token}`
             }
             axios.post('http://localhost:3000/reader/document/check', data, {
                 headers: headers
@@ -35,7 +35,7 @@ const BookDetails = (props) => {
         }
         const headers = {
             'Content-Type': 'application/json',
-            'authorization': `bearer ${localStorage.getItem('token')}`
+            'authorization': `bearer ${props.token}`
         }
         axios.post('http://localhost:3000/reader/document/reserve', data, {
             headers: headers
@@ -92,7 +92,8 @@ const BookDetails = (props) => {
 };
 const mapStateToProps = (state) => {
     return {
-        userId: state.auth.userId
+        userId: state.auth.userId,
+        token: state.auth.token
     }
 }
 export default connect(mapStateToProps)(BookDetails);

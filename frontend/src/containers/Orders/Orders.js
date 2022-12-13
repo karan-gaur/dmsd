@@ -26,7 +26,7 @@ function Orders(props) {
         }
         const headers = {
             'Content-Type': 'application/json',
-            'authorization': `bearer ${localStorage.getItem('token')}`
+            'authorization': `bearer ${props.token}`
         }
         axios.post('http://localhost:3000/reader/status/bookings/borrows', data, {
             headers: headers

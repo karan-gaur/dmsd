@@ -6,7 +6,7 @@ const Card = (props) => {
     const { item, cardType } = props;
     const docId = item.Doc_ID
     return (
-        <div className="card">
+        <div className="Card">
             {cardType === 'bookDetails' && <Link to={`/book/${docId}`}>
                 <img src={`${process.env.PUBLIC_URL + '/icons8-literature-64.png'}`} alt={item.Title} />
                 <div className="card-body">
@@ -75,6 +75,20 @@ const Card = (props) => {
                     </div>
                 </>
             }
+            {cardType === 'libraryBranchDetails' && <>
+                <img src={`${process.env.PUBLIC_URL + '/icons8-literature-64.png'}`} alt={item.Title} />
+                <div className="card-body">
+                    <h3>{item.Name}</h3>
+                    <p className="cardDes">Location: {item.Location}</p>
+                </div>
+            </>}
+            {cardType === 'publisherDetails' && <>
+                <img src={`${process.env.PUBLIC_URL + '/icons8-literature-64.png'}`} alt={item.Title} />
+                <div className="card-body">
+                    <h3>{item.Publisher_Name}</h3>
+                    <p className="cardDes">Address: {item.Address}</p>
+                </div>
+            </>}
         </div>
     )
 }

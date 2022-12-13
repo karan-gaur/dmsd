@@ -9,7 +9,8 @@ const Search = (props) => {
     const [currentFilter, setCurrentFilter] = useState('title');
     const filterList = [
         {name:'Title', filterValue:'title'},
-        {name:'Publisher', filterValue:'PUBLISHER'},
+        // todo: check publisher value if it is passed correctly
+        {name:'Publisher', filterValue:'publisher'},
         {name:'Document ID', filterValue:'doc_id'},
     ]
 

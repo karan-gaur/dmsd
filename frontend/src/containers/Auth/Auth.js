@@ -103,12 +103,13 @@ const Auth = (props) => {
 
     const submitHandler = ( event ) => {
         event.preventDefault();
+        let isManager = false;
         if(state.controls.email.value === 'admin@gmail.com' && state.controls.password.value === 'password') {
-            console.log(1);
-            props.onSetAuthRedirectPath('/manager');
+            props.onSetAuthRedirectPath('/');
             props.onSetManger();
+            isManager = true;
         }
-        props.onAuth( state.controls.email.value, state.controls.password.value, state.isSignup );
+        props.onAuth( state.controls.email.value, state.controls.password.value, isManager );
     }
 
     // const switchAuthModeHandler = () => {
