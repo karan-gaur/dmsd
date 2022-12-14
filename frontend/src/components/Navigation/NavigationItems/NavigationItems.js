@@ -13,13 +13,16 @@ const addOptions = [
 const listOptions = [
     { name: 'List Branches', link: '/list/branches' },
     { name: 'List Publishers', link: '/list/publisher' },
+    { name: 'Most Borrowers', link: '/list/borrowers' },
+    { name: 'Most Book Borrowers', link: '/list/bookBorrowers' },
+    { name: 'Branch Fines', link: '/list/branchFine' },
 ];
 
 const navigationItems = ( props ) => (
     <ul className='NavigationItems'>
         <NavigationItem link="/" exact>Home</NavigationItem>
         {props.isAuthenticated && props.manager ? <Dropdown name="Add" options={addOptions}/> : null}
-        {props.isAuthenticated && props.manager ? <Dropdown name="list" options={listOptions}/> : null}
+        {props.isAuthenticated && props.manager ? <Dropdown name="List" options={listOptions}/> : null}
         {props.isAuthenticated && !props.manager ? <NavigationItem link="/reservation">Reserved</NavigationItem> : null}
         {props.isAuthenticated && !props.manager ? <NavigationItem link="/booked">Booked</NavigationItem> : null}
         {!props.isAuthenticated

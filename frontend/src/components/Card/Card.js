@@ -84,6 +84,26 @@ const Card = (props) => {
                     <p className="cardDes">Address: {item.Address}</p>
                 </div>
             </>}
+            {cardType === 'branchFineDetails' && <>
+                <div className="card-body">
+                    <h3>{item.Name}</h3>
+                    <p className="cardDes">Address: {item.Location}</p>
+                    <p className="cardDes">FINES: {item.FINES}</p>
+                </div>
+            </>}
+            {cardType === 'borrowDetails' && <>
+                <div className="card-body">
+                    <h3>{item.Name}</h3>
+                    <p className="cardDes">Phone Number: {item.Phone_NO}</p>
+                    <p className="cardDes">BORROWS: {item.BORROWS}</p>
+                </div>
+            </>}
+            {cardType === 'bookBorrowDetails' && <>
+                <div className="card-body">
+                    <h3>{item.Title}</h3>
+                    <p className="cardDes">NO_OF_BORROWS: {item.NO_OF_BORROWS}</p>
+                </div>
+            </>}
         </div>
     )
 }

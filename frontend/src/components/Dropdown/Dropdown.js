@@ -21,6 +21,8 @@ const DropDownListContainer = styled("div")`
     position:absolute;
     top:55px;
     min-width: 150px;
+    left: 50%;
+    transform: translateX(-50%);
 `;
 
 const DropDownList = styled("ul")`

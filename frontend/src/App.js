@@ -18,6 +18,9 @@ import ListBranches from './containers/ListBranches/ListBranches';
 import ListPublisher from './containers/ListPublisher/ListPublisher';
 import AddPublisher from './containers/AddPublisher/AddPublisher';
 import AddReader from './containers/AddReader/AddReader';
+import BranchFine from './containers/BranchFine/BranchFine';
+import MostBorrwers from './containers/MostBorrwers/MostBorrwers';
+import MostBookBorrwers from './containers/MostBookBorrwers/MostBookBorrwers';
 
 
 function App(props) {
@@ -43,6 +46,9 @@ function App(props) {
         <Route path="/add/publisher" component={AddPublisher} />
         <Route path="/list/branches" component={ListBranches} />
         <Route path="/list/publisher" component={ListPublisher} />
+        <Route path="/list/borrowers" component={MostBorrwers} />
+        <Route path="/list/bookBorrowers" component={MostBookBorrwers} />
+        <Route path="/list/branchFine" component={BranchFine} />
         <Route path="/logout" component={Logout} />
         <Route path='/book/:docId' component={BookDetails}/>
         <Route path="/reservation" component={Reservation} />

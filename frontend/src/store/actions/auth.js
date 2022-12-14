@@ -58,12 +58,12 @@ export const auth = (username, password, isManager) => {
                 const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
                 localStorage.setItem('token', response.data.token);
                 localStorage.setItem('expirationDate', expirationDate);
-                localStorage.setItem('userId', 1);
+                localStorage.setItem('userId', username);
                 if(isManager) {
                     localStorage.setItem('isManager', isManager);
                 }
                 // todo: PASS UID IN PLACE OF 1 FOR DIIFFERENT USER, uid shoudl come in login resppne with authtoken
-                dispatch(authSuccess(response.data.token, 1));
+                dispatch(authSuccess(response.data.token, username));
                 dispatch(checkAuthTimeout(expiresIn));
             })
             .catch(err => {
