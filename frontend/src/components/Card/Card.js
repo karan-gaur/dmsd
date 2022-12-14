@@ -50,7 +50,7 @@ const Card = (props) => {
                         <h3><span>Library:</span> {item.Name}, {item.Location} </h3>
                         <p className="cardDetail"><span>Reserved Date:</span> {new Date(item.RDTime).toUTCString()}</p>
                         <div className='btn-container'>
-                            <Button type="button" btnType="borrow" clicked={() => props.borrowBook(item.Reserve_ID)}>Borrow</Button>
+                            <Button type="button" btnType="borrow" clicked={() => props.borrowBook(item.Reserve_ID)} disabled={item.RStatus==0 ? true : false}>{item.RStatus==0 ? 'Cancelled' : 'Borrow'}</Button>
                         </div>
                     </div>
                 </>
@@ -101,7 +101,7 @@ const Card = (props) => {
             {cardType === 'bookBorrowDetails' && <>
                 <div className="card-body">
                     <h3>{item.Title}</h3>
-                    <p className="cardDes">NO_OF_BORROWS: {item.NO_OF_BORROWS}</p>
+                    <p className="cardDes"><span>No Of Borrows:</span> {item.NO_OF_BORROWS}</p>
                 </div>
             </>}
         </div>

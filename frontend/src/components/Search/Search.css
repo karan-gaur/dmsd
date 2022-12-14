@@ -97,7 +97,6 @@ body textarea {
 
 .search-outer button[type="submit"] img {
     position: relative;
-    top: 15px;
 }
 
 ::-webkit-input-placeholder {

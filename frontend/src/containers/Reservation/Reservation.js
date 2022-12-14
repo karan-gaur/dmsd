@@ -59,7 +59,7 @@ function Reservation(props) {
             {reservedDocumentDetails && reservedDocumentDetails?.length ?
                 <div className='dataList'>
                     {reservedDocumentDetails?.length && reservedDocumentDetails.map((item, index) => (
-                        <Card key={index} item={item} cardType="reservedDocumentDetails" borrowBook={borrowBook} />
+                        item.RStatus!=1 ? <Card key={index} item={item} cardType="reservedDocumentDetails" borrowBook={borrowBook} /> : null
                     ))}
                 </div>
                 // <div className='Wrapper'>
