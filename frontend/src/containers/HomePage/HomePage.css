@@ -1,11 +1,18 @@
 .HomeContainer {
-    height: 100vh;
+    min-height: 100vh;
     text-align: center;
 }
 
-.HomeContainer h2{
+.HomeContainer h2 {
     font-size: 42px;
-    position: relative;
-    top: 5%;
-    transform: translateY(-15%);
+    padding-top: 10px;
+}
+
+.HomeContainer p {
+    font-size: 24px;
+    padding: 20px 0px;
+}
+
+.HomeContainer a {
+    color: black;
 }

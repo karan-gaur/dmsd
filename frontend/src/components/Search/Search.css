@@ -97,7 +97,6 @@ body textarea {
 
 .search-outer button[type="submit"] img {
     position: relative;
-    top: 15px;
 }
 
 ::-webkit-input-placeholder {
@@ -140,7 +139,7 @@ body textarea {
 .data-list li {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
     margin-bottom: 15px;
     padding: 30px;
 }
@@ -184,8 +183,30 @@ body textarea {
 .radioFilter{
 	display:flex;
 	flex-direction:row;
-	justify-content:space-around;
+    justify-content: space-between;
 	margin-bottom:20px;
+}
+
+.radioFilter span {
+	font-weight: 600;
+    min-width: 130px;
+}
+
+.radioFilter div {
+    flex-basis: 25%;
+	font-size: 16px;
+    line-height: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.radioFilter div label {
+	padding-left: 6px;
+}
+
+.radioFilter input[type = "radio"] {
+	width: 16px;
+    height: 16px;
 }
 
 @media only screen and (max-width: 768px) {

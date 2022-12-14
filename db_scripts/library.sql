@@ -98,8 +98,8 @@ CREATE TABLE READER(
     Type VARCHAR(20) NOT NULL,
     Name VARCHAR(20) NOT NULL,
     Address VARCHAR(200),
-    Phone_NO CHAR(10),
-    CONSTRAINT CHK_PHONE CHECK (Phone_NO not like '%[^0-9]%')
+    Phone_NO CHAR(14),
+    CONSTRAINT CHK_PHONE CHECK (Phone_NO not like '^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$')
 );
 
 CREATE TABLE BORROWS(
@@ -117,7 +117,7 @@ CREATE TABLE RESERVES(
     Reserve_ID INTEGER AUTO_INCREMENT PRIMARY KEY,
     Reader_ID INTEGER NOT NULL,
     Doc_Detail INTEGER NOT NULL,
-    DTime DATE DEFAULT (CURRENT_DATE),
+    RDTime DATE DEFAULT (CURRENT_DATE),
     RStatus BOOLEAN DEFAULT NULL,
     CONSTRAINT RESERVE_READER FOREIGN KEY(Reader_ID) REFERENCES READER(Reader_ID),
     CONSTRAINT RESERVE_DCOPY FOREIGN KEY(Doc_Detail) REFERENCES DOC_COPY(UUID)
@@ -260,10 +260,11 @@ INSERT INTO READER(Password, Type, Name, Address, Phone_NO) VALUES
     ("password", "admin", "Karan", "NJIT", 7897897897),
     ("password1", "student", "Satyam", "NJIT", 7878787878);
 
+delimiter |
+
 -- Add Trigger to Unreserve Document everyday @ 6 PM
 DROP EVENT IF EXISTS RESET_RESERVES;
 
-delimiter |
 CREATE EVENT IF NOT EXISTS RESET_RESERVES
 ON SCHEDULE EVERY 1 DAY
 STARTS (TIMESTAMP(CURRENT_DATE)+ INTERVAL 1 DAY + INTERVAL 18 HOUR) 
@@ -282,8 +283,6 @@ FOR EACH ROW
 BEGIN
     UPDATE DOC_COPY SET Available=FALSE WHERE UUID=NEW.Doc_Detail;
 END |
-
--- Trigger to update Document_Copy
 
 -- Trigger to update Document_Copy status after borrow
 DROP TRIGGER IF EXISTS BOOK_BORROWED;
@@ -305,6 +304,18 @@ BEGIN
     IF (NEW.RDTime IS NOT NULL) THEN
         UPDATE DOC_COPY SET Available=TRUE WHERE UUID=NEW.Doc_Detail;
     END IF ;
+END |
+
+-- Add Trigger to calculate fine
+DROP TRIGGER IF EXISTS CALCULATE_FINE;
+
+CREATE TRIGGER CALCULATE_FINE
+BEFORE UPDATE ON BORROWS
+FOR EACH ROW
+BEGIN
+    IF (NEW.RDTime IS NOT NULL) THEN
+        SET NEW.FINE = GREATEST(DATEDIFF(NEW.RDTime, NEW.BDTime)-7, 0)*10;
+    END IF;
 END |
 
 delimiter ;
