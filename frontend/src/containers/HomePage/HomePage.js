@@ -16,7 +16,7 @@ const HomePage = (props) => {
 
     return (
         <>
-            <h2>Books Library</h2>
+            <h2>The City Library</h2>
             {showSearch && <Search />}
             {!showSearch && <p>Login to Proceed. <Link to='/auth'>Login</Link></p>}
         </>

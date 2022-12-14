@@ -73,7 +73,7 @@ function Orders(props) {
 
     return (
         <>
-            <h2>User Reserved/Returned Documents</h2>
+            <h2>User Borrowed/Returned Documents</h2>
             {/* add a button for return in reserved card */}
 
             {allDocumentDetails && allDocumentDetails?.length ?

@@ -63,7 +63,7 @@ const Card = (props) => {
                         </h3>
                         <h3> <span>Library:</span> {item.Name}, {item.Location} </h3>
                         <p className="cardDetail"><span>Borrowed Date:</span> {new Date(item.BDTime).toUTCString()}</p>
-                        {item.Fine && <p className="cardDetail">Fine: ${item.Fine}</p>}
+                        <p className="cardDetail"><span>Fine:</span> ${item.Fine}</p>
                         <div className='btn-container'>
                             <Button type="button" btnType="borrow" clicked={() => props.returnBook(item.Borrow_ID)}>Return</Button>
                         </div>
