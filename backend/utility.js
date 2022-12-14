@@ -64,6 +64,7 @@ const validateLogin = (req, res, next) => {
 
 // Validating params for Search in Documents
 const validateSearchParams = (req, res, next) => {
+    console.log(req.body)
     if (typeof req.body.search !== "string" || !(req.body.searchBy in SEARCH_BY)) {
         logger.error(`Invalid value for search params - ${req.body}`);
         return res.status(400).json({
@@ -72,6 +73,7 @@ const validateSearchParams = (req, res, next) => {
     }
     if (typeof req.body.available == "undefined") {
         req.body.available = "NOT NULL";
+        console.log("!@#!@#!@#!@#!#!@#!@#!@#!@#")
     } else if (typeof req.body.available !== "boolean") {
         logger.error(`Invalid value for search params - ${req.body}`);
         return res.status(400).json({

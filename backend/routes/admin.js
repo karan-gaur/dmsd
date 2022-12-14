@@ -161,10 +161,11 @@ router.post("/search", validateSearchParams, (req, res) => {
     if (req.body.searchBy == SEARCH_BY.publisher) {
         query = `SELECT * FROM (SELECT * FROM ${DBQ.DOCUMENT} NATURAL JOIN ${DBQ.PUBLISHER}) T1 NATURAL JOIN ${DBQ.DOCUMENT_COPY} WHERE ${DBQ.PUBLISHER_NAME} LIKE "%${req.body.search}%" AND ${DBQ.DOCUMENT_COPY_AVAILABLE} IS ${req.body.available}`;
     } else if (req.body.searchBy == SEARCH_BY.doc_id) {
-        query = `SELECT * FROM ${DBQ.DOCUMENT} WHERE ${DBQ.DOCUMENT_ID}=${req.body.search} AND ${DBQ.DOCUMENT_COPY_AVAILABLE} IS ${req.body.available}`;
+        query = `SELECT * FROM ${DBQ.DOCUMENT} NATURAL JOIN ${DBQ.DOCUMENT_COPY} WHERE ${DBQ.DOCUMENT_ID}=${req.body.search} AND ${DBQ.DOCUMENT_COPY_AVAILABLE} IS ${req.body.available}`;
     } else if (req.body.searchBy == SEARCH_BY.title) {
-        query = `SELECT * FROM ${DBQ.DOCUMENT} WHERE ${DBQ.DOCUMENT_TITLE} LIKE "%${req.body.search}%" AND ${DBQ.DOCUMENT_COPY_AVAILABLE} IS ${req.body.available}`;
+        query = `SELECT * FROM ${DBQ.DOCUMENT} NATURAL JOIN ${DBQ.DOCUMENT_COPY} WHERE ${DBQ.DOCUMENT_TITLE} LIKE "%${req.body.search}%" AND ${DBQ.DOCUMENT_COPY_AVAILABLE} IS ${req.body.available}`;
     }
+    console.log(query)
     db.query(query, (error, result) => {
         if (error) {
             logger.error(`Error in DB Querry ${error.message}`);

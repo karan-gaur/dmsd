@@ -54,7 +54,8 @@ const Search = (props) => {
             'authorization': `bearer ${localStorage.getItem('token')}`
           }
         console.log(data);
-        axios.post('http://localhost:3000/reader/search', data, {
+        let url = props.manager ? 'http://localhost:3000/admin/search' : 'http://localhost:3000/reader/search';
+        axios.post(url, data, {
             headers: headers
           }).then(resp=>{
             console.log(resp);
