@@ -165,7 +165,6 @@ router.post("/search", validateSearchParams, (req, res) => {
     } else if (req.body.searchBy == SEARCH_BY.title) {
         query = `SELECT * FROM ${DBQ.DOCUMENT} NATURAL JOIN ${DBQ.DOCUMENT_COPY} WHERE ${DBQ.DOCUMENT_TITLE} LIKE "%${req.body.search}%" AND ${DBQ.DOCUMENT_COPY_AVAILABLE} IS ${req.body.available}`;
     }
-    console.log(query)
     db.query(query, (error, result) => {
         if (error) {
             logger.error(`Error in DB Querry ${error.message}`);
