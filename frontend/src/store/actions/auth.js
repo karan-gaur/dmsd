@@ -11,7 +11,7 @@ export const authStart = () => {
 export const authSuccess = (token, userId) => {
     return {
         type: actionTypes.AUTH_SUCCESS,
-        idToken: 'token',
+        idToken: token,
         userId: userId
     };
 };
@@ -27,6 +27,7 @@ export const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('expirationDate');
     localStorage.removeItem('userId');
+    localStorage.removeItem('isManager');
     return {
         type: actionTypes.AUTH_LOGOUT
     };
@@ -40,28 +41,29 @@ export const checkAuthTimeout = (expirationTime) => {
     };
 };
 
-export const auth = (email, password, isSignup) => {
+export const auth = (username, password, isManager) => {
     return dispatch => {
         dispatch(authStart());
         const authData = {
-            uid: 1,
+            // todo: PASS UID IN PLACE OF 1 FOR DIIFFERENT USER, uid should be enterd by form if you want
+            uid: username,
             password: password
         };
-        let url = 'http://localhost:3000/reader/login';
-        // if (!isSignup) {
-        //     url = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyC6TVSzbdy0Q_EA2FSWZdJ9mesn3N9EZyk';
-        // }
+        let url = 'http://localhost:3000/login';
+
         axios.post(url, authData)
             .then(response => {
                 const expiresIn = 3600;
                 console.log(response);
                 const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
-                // localStorage.setItem('token', response.data.idToken);
-                localStorage.setItem('token', 'authToken');
+                localStorage.setItem('token', response.data.token);
                 localStorage.setItem('expirationDate', expirationDate);
-                localStorage.setItem('userId', 1);
-                // dispatch(authSuccess(response.data.idToken, response.data.localId));
-                dispatch(authSuccess('authToken', 1));
+                localStorage.setItem('userId', username);
+                if(isManager) {
+                    localStorage.setItem('isManager', isManager);
+                }
+                // todo: PASS UID IN PLACE OF 1 FOR DIIFFERENT USER, uid shoudl come in login resppne with authtoken
+                dispatch(authSuccess(response.data.token, username));
                 dispatch(checkAuthTimeout(expiresIn));
             })
             .catch(err => {
@@ -95,7 +97,11 @@ export const authCheckState = () => {
                 dispatch(logout());
             } else {
                 const userId = localStorage.getItem('userId');
+                const isManager =  localStorage.getItem('isManager');
                 dispatch(authSuccess(token, userId));
+                if(isManager) {
+                    dispatch(setManager());
+                }
                 dispatch(checkAuthTimeout((expirationDate.getTime() - new Date().getTime()) / 1000 ));
             }   
         }

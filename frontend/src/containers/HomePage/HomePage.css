@@ -5,9 +5,7 @@
 
 .HomeContainer h2 {
     font-size: 42px;
-    position: relative;
-    top: 5%;
-    transform: translateY(-15%);
+    padding-top: 10px;
 }
 
 .HomeContainer p {

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import Modal from "../../components/UI/Modal/Modal";
 
 import axios from 'axios';
 import * as actions from '../../store/actions/index';
@@ -8,28 +9,57 @@ import Card from '../../components/Card/Card';
 import './Reservation.css';
 
 function Reservation(props) {
-    const { userId } = props;
     const [reservedDocumentDetails, setReservedDocumentDetails] = useState([]);
+    const [message, setMessage] = useState(null);
 
     useEffect(() => {
-        const data = {
-            "uid": userId
+        const headers = {
+            'Content-Type': 'application/json',
+            'authorization': `bearer ${props.token}`
         }
-        axios.post('http://localhost:3000/reader/status/bookings/reserves', data).then(resp => {
+        axios.get('http://localhost:3000/reader/status/bookings/reserves', {
+            headers: headers
+        }).then(resp => {
             if (resp.status === 200) {
                 setReservedDocumentDetails(resp.data.result);
             }
         })
-    }, [userId]);
+    }, [message, props.token]);
+
+    const borrowBook = (reserveId) => {
+        console.log('working', reserveId);
+        const data = {
+            reserveID: Number(reserveId)
+        }
+        const headers = {
+            'Content-Type': 'application/json',
+            'authorization': `bearer ${props.token}`
+        }
+        axios.post('http://localhost:3000/reader/document/reserve/checkout', data, {
+            headers: headers
+        }).then(resp => {
+            if (resp.status === 200) {
+                console.log(resp);
+                setMessage(resp.data.result)
+            }
+        }).catch(err => {
+            console.log(err.response);
+            setMessage(err.response.data.error)
+        })
+    }
+
+    const errorConfirmedHandler = () => {
+        setMessage(null);
+    }
 
     return (
         <>
-            <h2>User Reserved/Returned Documents</h2>
+            <h2>User Reserved Documents</h2>
 
             {reservedDocumentDetails && reservedDocumentDetails?.length ?
                 <div className='dataList'>
                     {reservedDocumentDetails?.length && reservedDocumentDetails.map((item, index) => (
-                        <Card key={index} item={item} cardType="reservedDocumentDetails" />
+                        item.RStatus!=1 ? <Card key={index} item={item} cardType="reservedDocumentDetails" borrowBook={borrowBook} /> : null
                     ))}
                 </div>
                 // <div className='Wrapper'>
@@ -53,11 +83,11 @@ function Reservation(props) {
                 :
                 reservedDocumentDetails?.length === 0 && <><p>User has no Reserved Documents present</p> <p>Go to <Link to="/">Home</Link> Page</p> </>
             }
-            {/* <Modal
+            <Modal
                 show={message}
                 modalClosed={errorConfirmedHandler}>
                 {message}
-            </Modal> */}
+            </Modal>
         </>
     );
 }

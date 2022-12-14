@@ -43,3 +43,43 @@
   justify-content: center;
   padding: 40px 15px 0;
 }
+
+.adminForms {
+  text-align: left;
+  width: 50%;
+  margin: 0 auto;
+  padding-top: 40px;
+}
+
+.adminForms label {
+  text-align: left;
+  font-size: 1.2rem;
+  margin: 10px 0px;
+  font-weight: 600;
+}
+
+.adminForms button {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.borrowDetails {
+  padding: 20px ;
+}
+
+.borrowDetails .form-check {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.borrowDetails .form-switch .form-check-input{
+  float: none;
+  margin-left: 20px;
+  width: 3rem;
+  height: 1.5rem;
+}
+
+.borrowDetails label{
+  font-size: 20px;
+}

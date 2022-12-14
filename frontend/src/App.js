@@ -12,6 +12,15 @@ import * as actions from './store/actions/index';
 import Logout from './containers/Auth/Logout/Logout';
 import Reservation from './containers/Reservation/Reservation';
 import Orders from './containers/Orders/Orders';
+import AddDocument from './containers/AddDocument/AddDocument';
+import AddDocumentCopy from './containers/AddDocumentCopy/AddDocumentCopy';
+import ListBranches from './containers/ListBranches/ListBranches';
+import ListPublisher from './containers/ListPublisher/ListPublisher';
+import AddPublisher from './containers/AddPublisher/AddPublisher';
+import AddReader from './containers/AddReader/AddReader';
+import BranchFine from './containers/BranchFine/BranchFine';
+import MostBorrwers from './containers/MostBorrwers/MostBorrwers';
+import MostBookBorrwers from './containers/MostBookBorrwers/MostBookBorrwers';
 
 
 function App(props) {
@@ -26,11 +35,34 @@ function App(props) {
       <Redirect to="/" />
     </Switch>
   );
-  if(props.isAuthenticated) {
+    
+    
+  if ( props.manager && props.isAuthenticated) {
+    routes = (
+      <Switch>
+        <Route path="/add/document" component={AddDocument} />
+        <Route path="/add/documentCopy" component={AddDocumentCopy} />
+        <Route path="/add/reader" component={AddReader} />
+        <Route path="/add/publisher" component={AddPublisher} />
+        <Route path="/list/branches" component={ListBranches} />
+        <Route path="/list/publisher" component={ListPublisher} />
+        <Route path="/list/borrowers" component={MostBorrwers} />
+        <Route path="/list/bookBorrowers" component={MostBookBorrwers} />
+        <Route path="/list/branchFine" component={BranchFine} />
+        <Route path="/logout" component={Logout} />
+        <Route path='/book/:docId' component={BookDetails}/>
+        <Route path="/reservation" component={Reservation} />
+        <Route path="/booked" component={Orders} />
+        <Route path="/" exact component={HomePage} />
+        <Redirect to="/" />
+      </Switch>
+    );
+  }
+
+  if ( props.isAuthenticated && props.manager === false) {
     routes = (
       <Switch>
         <Route path='/book/:docId' component={BookDetails}/>
-        {/* <Route path="/manager" component={Manager} /> */}
         <Route path="/reservation" component={Reservation} />
         <Route path="/booked" component={Orders} />
         <Route path="/logout" component={Logout} />
